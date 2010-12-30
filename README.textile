@@ -7,6 +7,25 @@ h2. Usage
 To create configurations for hosts 127.0.0.1, 127.0.0.2, 127.0.0.3 in the @foo@ directory, assuming @bar@ contains the Cassandra source, execute this command:
 @cassandra_maker.py foo bar 1 2 3@
 
+This will create the following configuration directories:
+@foo/conf_1@
+@foo/conf_2@
+@foo/conf_3@
+
+Each of those configuration directories will contain all the files you would normally see in @$CASSANDRA_HOME/conf@.
+
+It will also create the following empty data, commit log and saved-cache directories:
+@foo/data_1@
+@foo/data_2@
+@foo/data_3@
+
+You should also see the relevant @in.sh@ include scripts and startup scripts in @foo@.  At this point your new cluster should be ready to spin up.
+
+h3. Todo
+
+* detect platform and write either a @.command@ or @.sh@ script for the startup file.
+* specify entire hosts instead of integers.
+
 h3. Fan mail
 
 My user name is gdusbabek, I use gmail.
