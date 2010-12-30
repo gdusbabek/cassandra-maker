@@ -1,0 +1,12 @@
+h1. cassandra_maker.py
+
+cassandra_maker.py is a python script that will generate cassandra configuration and startup scripts for multiple hosts.
+
+h2. Usage
+
+To create configurations for hosts 127.0.0.1, 127.0.0.2, 127.0.0.3 in the @foo@ directory, assuming @bar@ contains the Cassandra source, execute this command:
+@cassandra_maker.py foo bar 1 2 3@
+
+h3. Fan mail
+
+My user name is gdusbabek, I use gmail.
