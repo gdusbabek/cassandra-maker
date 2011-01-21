@@ -30,19 +30,21 @@ import sys, os, stat
 import shutil
 import yaml
 
-def rewrite_yaml(yaml_path, config_dst, octet):
+def rewrite_yaml(yaml_path, config_dst, octet, token):
     """rewrites the yaml file according to your configuration"""
     y = yaml.load(open(yaml_path))
     # You'll want to hack this part up to sub in values that mean something to you.
-    y['auto_bootstrap'] = False
+    y['auto_bootstrap'] = True
     y['hinted_handoff_enabled'] = False
-    y['concurrent_writes'] = 4;
+    y['concurrent_writes'] = 4
     y['concurrent_reads'] = 4
     y['listen_address'] = '127.0.0.' + str(octet)
     y['rpc_address'] = y['listen_address']
     y['data_file_directories'] = [config_dst + '/data_' + octet + '/data']
     y['commitlog_directory'] = [config_dst + '/data_' + octet + '/commitlog']
     y['saved_caches_directory'] = [config_dst + '/data_' + octet + '/savedcaches']
+    y['keyspaces'][0]['replication_factor'] = 2
+    y['initial_token'] = int(token)
     open(yaml_path, 'w').write(yaml.dump(y))
 
 def rewrite_env(env_path, octet):
@@ -121,8 +123,10 @@ def main(argv=None):
         
     startup_ext = '.command'
 
-    for cfg_name in argv[3:]:
-    
+    node_count = len(argv[3:])
+    tokens = [2**127 / node_count * x for x in xrange(node_count)]
+
+    for cfg_name, token in zip(argv[3:], tokens):
         # make the conf dir.
         new_conf_path = os.path.join(config_dst, 'conf_' + cfg_name)
         print 'making config at ' + new_conf_path
@@ -146,7 +150,7 @@ def main(argv=None):
         print 'copied config files ' + cfg_name
     
         yaml_path = os.path.join(new_conf_path, 'cassandra.yaml')
-        rewrite_yaml(yaml_path, config_dst, cfg_name)
+        rewrite_yaml(yaml_path, config_dst, cfg_name, token)
         print 'rewrote ' + yaml_path
         
         env_path = os.path.join(new_conf_path, 'cassandra-env.sh')
